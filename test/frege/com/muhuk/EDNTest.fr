@@ -6,9 +6,11 @@ import com.muhuk.EDN
 
 test :: (Eq a, Show a) => a -> a -> IO ()
 test expected actual = println $ if (expected == actual)
-    then  "✓ " ++ (show expected)
-    else "✗ " ++ (show expected) ++ " =/= " ++ (show actual)
-
+    then  "✓ " ++ (show' expected)
+    else "✗ " ++ (show' expected) ++ " =/= " ++ (show' actual) where
+    show' = unescapeQuotes • trimQuotes • show
+    trimQuotes v = substr v 1 (length v - 1)
+    unescapeQuotes v = v.replaceAll ´\\"´ "\""
 
 
 main = do
@@ -18,4 +20,8 @@ main = do
     test "nil" $ encodeValue Nil
     test "true" $ encodeValue (Boolean true)
     test "false" $ encodeValue (Boolean false)
+
+    test "\"abc\"" $ encode "abc"
+    test "nil" $ encode (Nothing:: Maybe String)
+    test "\"x\"" $ encode (Just "x")
     println "\n\n"

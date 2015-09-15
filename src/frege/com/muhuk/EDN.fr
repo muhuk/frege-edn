@@ -57,17 +57,24 @@ type TaggedValue = Tagged Value
 -- Encoding
 
 
--- instance ToEDN Namespaced where
---     toEDN (Namespaced ns s) = Nil
+instance ToEDN (ToEDN a) => (Maybe a) where
+    toEDN Nothing = Nil
+    toEDN (Just a) = toEDN a
+
+
+instance ToEDN String where
+    toEDN s = (String s)
 
 
 encodeTaggedValue :: TaggedValue -> String
-encodeTaggedValue _ = "" -- calls encodeValue
+encodeTaggedValue (NoTag v) = encodeValue v
+encodeTaggedValue (Tagged ns v) = (encodeNamespaced ns) ++ " " ++ (encodeValue v)
 
 
 encodeValue :: Value -> String
 encodeValue Nil = "nil"
 encodeValue (Boolean v) = show v
+encodeValue (String v) = "\"" ++ v ++ "\""
 encodeValue _ = ""
 
 
