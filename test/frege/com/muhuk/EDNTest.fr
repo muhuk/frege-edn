@@ -4,7 +4,18 @@ module com.muhuk.EDNTest where
 import com.muhuk.EDN
 
 
+test :: (Eq a, Show a) => a -> a -> IO ()
+test expected actual = println $ if (expected == actual)
+    then  "✓ " ++ (show expected)
+    else "✗ " ++ (show expected) ++ " =/= " ++ (show actual)
+
+
+
 main = do
     println "Test results:\n\n"
-    println $ show $ Namespaced "clojure.core" "ns"
+    test "prn" $ encodeNamespaced (Namespaced "" "prn")
+    test "clojure.core/ns" $ encodeNamespaced (Namespaced "clojure.core" "ns")
+    test "nil" $ encodeValue Nil
+    test "true" $ encodeValue (Boolean true)
+    test "false" $ encodeValue (Boolean false)
     println "\n\n"
