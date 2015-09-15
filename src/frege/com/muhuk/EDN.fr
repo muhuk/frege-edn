@@ -1,0 +1,73 @@
+module com.muhuk.EDN where
+
+import frege.data.TreeMap (TreeMap, TreeSet)
+
+
+class ToEDN a where
+    toEDN :: a -> Value
+    toEDN x = case toEDNtagged x of
+       (Tagged _ y) -> y
+       (NoTag y) -> y
+
+    toEDNtagged :: a -> TaggedValue
+    toEDNtagged = NoTag • toEDN 
+
+
+-- class FromEDN a where
+--     fromEDN :: MonadFail m => Value -> m a
+--     fromEDNtagged :: MonadFail m => TaggedValue -> m a
+
+
+data Namespaced = Namespaced String String
+derive Eq Namespaced
+derive Ord Namespaced
+derive Show Namespaced
+
+
+type EDNList = [TaggedValue]
+type EDNVector = [TaggedValue]
+type EDNMap = TreeMap Value TaggedValue
+type EDNSet = TreeSet TaggedValue
+
+
+data Value = Nil
+           | Boolean Bool
+           | String String
+           | Character Char
+           | Symbol Namespaced
+           | Keyword Namespaced
+           | Integer Integer
+           | Floating Double
+           | List EDNList
+           | Vector EDNVector
+           | Map EDNMap
+           | Set EDNSet
+derive Show Value
+
+
+data Tagged a = NoTag a | Tagged Namespaced a
+derive Eq Tagged a
+derive Ord Tagged a
+derive Show Tagged a
+
+
+type TaggedValue = Tagged Value
+
+
+-- Encoding
+
+
+-- instance ToEDN (ToEDN a) =>  Tagged a where
+--     toEDN (Tagged t v) = Nil
+--     toEDNtagged (Tagged t v) = (Tagged t Nil)
+
+
+-- fromTagged :: TaggedValue -> String
+-- fromTagged _ = "" -- calls fromValue
+-- 
+-- fromValue :: Value -> String
+-- fromValue _ = ""
+
+
+encode :: ToEDN a => a -> String
+encode = show . toEDNtagged

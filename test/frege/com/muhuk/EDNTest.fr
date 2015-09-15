@@ -1,0 +1,10 @@
+module com.muhuk.EDNTest where
+
+
+import com.muhuk.EDN
+
+
+main = do
+    println "Test results:\n\n"
+    println $ show $ Namespaced "clojure.core" "ns"
+    println "\n\n"
