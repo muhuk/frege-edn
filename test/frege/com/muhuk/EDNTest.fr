@@ -2,26 +2,18 @@ module com.muhuk.EDNTest where
 
 
 import com.muhuk.EDN
+import frege.test.QuickCheck
 
 
-test :: (Eq a, Show a) => a -> a -> IO ()
-test expected actual = println $ if (expected == actual)
-    then  "✓ " ++ (show' expected)
-    else "✗ " ++ (show' expected) ++ " =/= " ++ (show' actual) where
-    show' = unescapeQuotes • trimQuotes • show
-    trimQuotes v = substr v 1 (length v - 1)
-    unescapeQuotes v = v.replaceAll ´\\"´ "\""
+testEncodeNamespacedNoNs = once $ encodeNamespaced (Namespaced "" "prn") == "prn" 
+testEncodeNamespacedWithNs = once $ encodeNamespaced (Namespaced "clojure.core" "ns") == "clojure.core/ns"
 
 
-main = do
-    println "Test results:\n\n"
-    test "prn" $ encodeNamespaced (Namespaced "" "prn")
-    test "clojure.core/ns" $ encodeNamespaced (Namespaced "clojure.core" "ns")
-    test "nil" $ encodeValue Nil
-    test "true" $ encodeValue (Boolean true)
-    test "false" $ encodeValue (Boolean false)
+testEncodeValueNil = once $ encodeValue Nil == "nil"
+testEncodeValueTrue = once $ encodeValue (Boolean true) == "true"
+testEncodeValueFalse = once $ encodeValue (Boolean false) == "false"
 
-    test "\"abc\"" $ encode "abc"
-    test "nil" $ encode (Nothing:: Maybe String)
-    test "\"x\"" $ encode (Just "x")
-    println "\n\n"
+
+testEncodeString = once $ encode "abc" == "\"abc\""
+testEncodeNothing = once $ encode (Nothing :: Maybe String) == "nil"
+testEncodeJust = once $ encode (Just "x") == "\"x\""
