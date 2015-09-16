@@ -1,0 +1,47 @@
+module com.muhuk.edn.Value where
+
+
+import frege.data.TreeMap (TreeMap, TreeSet)
+
+
+-- Internal representation of EDN data.
+-- Use ToEDN & FromEDN to adopt your own types.
+data Value = Nil
+           | Boolean Bool
+           | String String
+           | Character Char
+           | Symbol Namespaced
+           | Keyword Namespaced
+           | Integer Integer
+           | Floating Double
+           | List EDNList
+           | Vector EDNVector
+           | Map EDNMap
+           | Set EDNSet
+derive Show Value
+
+
+-- EDN collection types.
+type EDNList = [TaggedValue]
+type EDNVector = [TaggedValue]
+type EDNMap = TreeMap Value TaggedValue
+type EDNSet = TreeSet TaggedValue
+
+
+type TaggedValue = Tagged Value
+
+
+-- Tagged elements.
+-- (see https://github.com/edn-format/edn#tagged-elements)
+data Tagged a = NoTag a 
+            | Tagged Namespaced a
+derive Eq Tagged a
+derive Ord Tagged a
+derive Show Tagged a
+
+
+-- Represents something that may or may not have a namespace.
+data Namespaced = Namespaced String String
+derive Eq Namespaced
+derive Ord Namespaced
+derive Show Namespaced

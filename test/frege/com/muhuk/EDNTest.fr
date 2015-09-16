@@ -1,7 +1,8 @@
 module com.muhuk.EDNTest where
 
 
-import com.muhuk.EDN
+import com.muhuk.EDN (encodeNamespaced, encode, encodeValue)
+import com.muhuk.edn.Value (Boolean, Namespaced, Nil)
 import frege.test.QuickCheck
 
 
